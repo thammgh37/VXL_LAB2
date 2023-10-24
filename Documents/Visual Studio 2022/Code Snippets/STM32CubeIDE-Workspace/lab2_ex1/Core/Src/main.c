@@ -109,26 +109,35 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  enum statusLed{
+    led1,
+    led2,
+  };
   HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, 0);
   HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, 1);
   display7SEG(1);
+  enum statusLed status = led1;
   setTimer1(50);
-  int led_status = 1;
   while (1)
   {
 	  if (timer1_flag == 1){
 		  setTimer1(50);
-		  if (led_status == 1){
-			  display7SEG(2);
-			  led_status = 2;
-		  }
-		  else {
-			  display7SEG(1);
-			  led_status = 1;
-		  }
-		  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		  HAL_GPIO_TogglePin(EN0_GPIO_Port, EN0_Pin);
-		  HAL_GPIO_TogglePin(EN1_GPIO_Port, EN1_Pin);
+		  switch (status) {
+			case led1:
+				display7SEG(1);
+				HAL_GPIO_WritePin(EN0_GPIO_Port,EN0_Pin, 0);
+				HAL_GPIO_WritePin(EN1_GPIO_Port,EN1_Pin, 1);
+				status = led2;
+				break;
+			case led2:
+				display7SEG(2);
+				HAL_GPIO_WritePin(EN0_GPIO_Port,EN0_Pin, 1);
+				HAL_GPIO_WritePin(EN1_GPIO_Port,EN1_Pin, 0);
+				status = led1;
+				break;
+			default:
+				break;
+		}
 	  }
     /* USER CODE END WHILE */
 
